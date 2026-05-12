@@ -1,0 +1,6 @@
+GPL-3.0-or-later
+
+This repository is seeded for Betaflight-derived control-core work. Betaflight is
+licensed under the GNU General Public License, version 3 or later. Before this
+repository is published, replace this placeholder with the full GPL-3.0-or-later
+license text or reuse Betaflight's upstream COPYING/LICENSE file.
