@@ -1,11 +1,57 @@
 #include "bfcore/control_core.h"
+#include "bfcore/rates.h"
 
 #include <math.h>
 #include <stdio.h>
 
 static int nearly_equal(float a, float b)
 {
-    return fabsf(a - b) < 1.0e-5f;
+    return fabsf(a - b) < 1.0e-4f;
+}
+
+static bfcore_rates_config_t test_rates_config(bfcore_rates_type_t type)
+{
+    bfcore_rates_config_t rates;
+
+    bfcore_rates_default_config(&rates);
+    rates.type = type;
+    rates.rc_rates[BFCORE_ROLL] = 100;
+    rates.rc_expo[BFCORE_ROLL] = 30;
+    rates.rates[BFCORE_ROLL] = 70;
+    rates.rate_limit[BFCORE_ROLL] = (unsigned short)BFCORE_SETPOINT_RATE_LIMIT_MAX;
+    rates.quick_rates_rc_expo = 1;
+
+    return rates;
+}
+
+static int test_betaflight_rate_formula(void)
+{
+    const bfcore_rates_config_t rates = test_rates_config(BFCORE_RATES_BETAFLIGHT);
+    return nearly_equal(bfcore_apply_rates(&rates, BFCORE_ROLL, 0.5f), 113.46154f) ? 0 : 1;
+}
+
+static int test_raceflight_rate_formula(void)
+{
+    const bfcore_rates_config_t rates = test_rates_config(BFCORE_RATES_RACEFLIGHT);
+    return nearly_equal(bfcore_apply_rates(&rates, BFCORE_ROLL, 0.5f), 523.12500f) ? 0 : 1;
+}
+
+static int test_kiss_rate_formula(void)
+{
+    const bfcore_rates_config_t rates = test_rates_config(BFCORE_RATES_KISS);
+    return nearly_equal(bfcore_apply_rates(&rates, BFCORE_ROLL, 0.5f), 119.23077f) ? 0 : 1;
+}
+
+static int test_actual_rate_formula(void)
+{
+    const bfcore_rates_config_t rates = test_rates_config(BFCORE_RATES_ACTUAL);
+    return nearly_equal(bfcore_apply_rates(&rates, BFCORE_ROLL, 0.5f), 500.0f) ? 0 : 1;
+}
+
+static int test_quick_rate_formula(void)
+{
+    const bfcore_rates_config_t rates = test_rates_config(BFCORE_RATES_QUICK);
+    return nearly_equal(bfcore_apply_rates(&rates, BFCORE_ROLL, 0.5f), 120.55556f) ? 0 : 1;
 }
 
 static int test_disarmed_outputs_zero(void)
@@ -77,6 +123,31 @@ int main(void)
 
     if (test_hover_throttle_equal_motors() != 0) {
         fprintf(stderr, "test_hover_throttle_equal_motors failed\n");
+        return 1;
+    }
+
+    if (test_betaflight_rate_formula() != 0) {
+        fprintf(stderr, "test_betaflight_rate_formula failed\n");
+        return 1;
+    }
+
+    if (test_raceflight_rate_formula() != 0) {
+        fprintf(stderr, "test_raceflight_rate_formula failed\n");
+        return 1;
+    }
+
+    if (test_kiss_rate_formula() != 0) {
+        fprintf(stderr, "test_kiss_rate_formula failed\n");
+        return 1;
+    }
+
+    if (test_actual_rate_formula() != 0) {
+        fprintf(stderr, "test_actual_rate_formula failed\n");
+        return 1;
+    }
+
+    if (test_quick_rate_formula() != 0) {
+        fprintf(stderr, "test_quick_rate_formula failed\n");
         return 1;
     }
 

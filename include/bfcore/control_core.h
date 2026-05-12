@@ -16,6 +16,23 @@ typedef enum bfcore_axis_e {
     BFCORE_YAW = 2,
 } bfcore_axis_t;
 
+typedef enum bfcore_rates_type_e {
+    BFCORE_RATES_BETAFLIGHT = 0,
+    BFCORE_RATES_RACEFLIGHT = 1,
+    BFCORE_RATES_KISS = 2,
+    BFCORE_RATES_ACTUAL = 3,
+    BFCORE_RATES_QUICK = 4,
+} bfcore_rates_type_t;
+
+typedef struct bfcore_rates_config_s {
+    bfcore_rates_type_t type;
+    unsigned char rc_rates[BFCORE_AXIS_COUNT];
+    unsigned char rc_expo[BFCORE_AXIS_COUNT];
+    unsigned char rates[BFCORE_AXIS_COUNT];
+    unsigned short rate_limit[BFCORE_AXIS_COUNT];
+    int quick_rates_rc_expo;
+} bfcore_rates_config_t;
+
 typedef struct bfcore_pid_gains_s {
     float p;
     float i;
@@ -24,8 +41,8 @@ typedef struct bfcore_pid_gains_s {
 } bfcore_pid_gains_t;
 
 typedef struct bfcore_config_s {
+    bfcore_rates_config_t rates;
     bfcore_pid_gains_t pid[BFCORE_AXIS_COUNT];
-    float max_rate_dps[BFCORE_AXIS_COUNT];
     float pid_sum_limit;
     float pid_sum_limit_yaw;
     float motor_output_min;
@@ -64,6 +81,7 @@ typedef struct bfcore_state_s {
 
 void bfcore_default_config(bfcore_config_t *config);
 void bfcore_reset(bfcore_state_t *state);
+float bfcore_apply_rates(const bfcore_rates_config_t *rates, int axis, float stick);
 int bfcore_step(
     bfcore_state_t *state,
     const bfcore_config_t *config,

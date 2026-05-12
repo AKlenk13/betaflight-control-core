@@ -1,4 +1,5 @@
 #include "bfcore/control_core.h"
+#include "bfcore/rates.h"
 
 #include <math.h>
 #include <string.h>
@@ -41,13 +42,11 @@ void bfcore_default_config(bfcore_config_t *config)
 
     memset(config, 0, sizeof(*config));
 
+    bfcore_rates_default_config(&config->rates);
+
     config->pid[BFCORE_ROLL] = (bfcore_pid_gains_t){ .p = 0.06f, .i = 0.30f, .d = 0.0015f, .f = 0.0f };
     config->pid[BFCORE_PITCH] = (bfcore_pid_gains_t){ .p = 0.06f, .i = 0.30f, .d = 0.0015f, .f = 0.0f };
     config->pid[BFCORE_YAW] = (bfcore_pid_gains_t){ .p = 0.06f, .i = 0.20f, .d = 0.0f, .f = 0.0f };
-
-    config->max_rate_dps[BFCORE_ROLL] = 670.0f;
-    config->max_rate_dps[BFCORE_PITCH] = 670.0f;
-    config->max_rate_dps[BFCORE_YAW] = 670.0f;
 
     config->pid_sum_limit = 500.0f;
     config->pid_sum_limit_yaw = 400.0f;
@@ -88,7 +87,7 @@ int bfcore_step(
 
     for (int axis = 0; axis < BFCORE_AXIS_COUNT; axis++) {
         const float stick = constrainf_local(input->stick[axis], -1.0f, 1.0f);
-        const float setpoint = stick * config->max_rate_dps[axis];
+        const float setpoint = bfcore_apply_rates(&config->rates, axis, stick);
         const float gyro = input->gyro_dps[axis];
         const float error = setpoint - gyro;
         const bfcore_pid_gains_t gains = config->pid[axis];

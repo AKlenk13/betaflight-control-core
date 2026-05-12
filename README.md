@@ -20,8 +20,11 @@ This repository starts with a small, buildable C interface so we can stabilize t
 - Normalized pilot input for roll, pitch, yaw, and throttle.
 - Gyro feedback in degrees per second.
 - Per-axis PID state.
+- Betaflight-faithful rate formulas.
 - Quad X motor mix using Betaflight mixer signs.
 - Example command-line harness.
+
+See [docs/fidelity-scope.md](docs/fidelity-scope.md) for what is currently faithful to Betaflight and what is still planned.
 
 ## Upstream Reference
 

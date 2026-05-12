@@ -28,7 +28,10 @@ taskMainPidLoop()
   - `updateRcCommands()`
   - `processRcCommand()`
   - `applyBetaflightRates()`
+  - `applyRaceFlightRates()`
+  - `applyKissRates()`
   - `applyActualRates()`
+  - `applyQuickRates()`
 - `src/main/flight/pid.c`
   - `pidController()`
   - consumes `getSetpointRate()` and `gyro.gyroADCf[]`

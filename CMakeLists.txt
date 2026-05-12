@@ -8,6 +8,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 add_library(bfcore
     src/control_core.c
+    src/rates.c
 )
 
 target_include_directories(bfcore
