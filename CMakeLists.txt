@@ -33,4 +33,4 @@ add_executable(bfcore_tests
 
 target_link_libraries(bfcore_tests PRIVATE bfcore)
 
-add_test(NAME bfcore_tests COMMAND bfcore_tests)
+add_test(NAME bfcore_tests COMMAND $<TARGET_FILE:bfcore_tests>)
